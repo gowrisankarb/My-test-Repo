@@ -28,7 +28,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration; // 1st line added
 using System.IO;
 
-namespace MeowWorld
+namespace TestAPI
 {
     public class Program
     {
