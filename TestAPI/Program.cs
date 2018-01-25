@@ -44,7 +44,6 @@ namespace MeowWorld
             .UseKestrel()
             .UseContentRoot(Directory.GetCurrentDirectory())
             .UseIISIntegration()
-            .UseStartup(url)
             .UseUrls(url) // 4th line added
             .Build();
 
