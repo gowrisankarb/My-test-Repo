@@ -28,7 +28,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration; // 1st line added
 using System.IO;
 
-namespace TestAPI
+namespace MeowWorld
 {
     public class Program
     {
@@ -44,6 +44,7 @@ namespace TestAPI
             .UseKestrel()
             .UseContentRoot(Directory.GetCurrentDirectory())
             .UseIISIntegration()
+            .UseStartup(url)
             .UseUrls(url) // 4th line added
             .Build();
 
