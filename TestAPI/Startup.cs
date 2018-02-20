@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.EntityFrameworkCore;
 using TestAPI.Models;
+using Microsoft.AspNetCore.Cors;
 
 
 namespace TestAPI
@@ -19,6 +20,7 @@ namespace TestAPI
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            
         }
 
         public IConfiguration Configuration { get; }
@@ -26,9 +28,15 @@ namespace TestAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy",
+                    builder => builder.AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowCredentials());
+            });
 
-            
-            services.AddCors();
             services.AddDbContext<ShipperInfoContext>(opt => opt.UseInMemoryDatabase("ShipperInfo"));
             services.AddMvc();
         }
@@ -41,12 +49,13 @@ namespace TestAPI
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseCors(builder => builder
-    .AllowAnyOrigin()
-    .AllowAnyMethod()
-    .AllowAnyHeader()
-    .AllowCredentials());
-            app.UseMvc();
+            app.UseCors("CorsPolicy");
+            app.UseMvc(routes =>
+            {
+                routes.MapRoute(
+                    name: "default",
+                    template: "{controller}/{action}");
+            });
         }
     }
 }

@@ -1,12 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using TestAPI.Models;
 
 namespace TestAPI.Controllers
 {
+    [Produces("application/json")]
+    [EnableCors("CorsPolicy")]
     [Route("api/[controller]")]
     public class ShipperInfoController : Controller
     {
@@ -18,7 +23,7 @@ namespace TestAPI.Controllers
 
             if (_context.ShipperInfoItems.Count() == 0)
             {
-                _context.ShipperInfoItems.Add(new ShipperInfo { ShipmentNo = 123456, ItemType = "Hazardous", ItemName = "Sulphuric Acid", Vendor = "UPS", Count = 10, Status = "In-Transit" });
+                _context.ShipperInfoItems.Add(new ShipperInfo { shipmentNumber = 123456, itemTyp = "Hazardous", itemNam = "Sulphuric Acid", vendorName = "UPS", itemCnt = 10, status = "In-Transit" });
                 _context.SaveChanges();
             }
         }
@@ -32,7 +37,7 @@ namespace TestAPI.Controllers
         [HttpGet("{ShipmentNo}", Name = "GetShipperInfo")]
         public IActionResult GetById(long ShipmentNo)
         {
-            var item = _context.ShipperInfoItems.FirstOrDefault(t => t.ShipmentNo == ShipmentNo);
+            var item = _context.ShipperInfoItems.FirstOrDefault(t => t.shipmentNumber == ShipmentNo);
             if (item == null)
             {
                 return NotFound();
@@ -40,7 +45,9 @@ namespace TestAPI.Controllers
             return new ObjectResult(item);
         }
 
+        //[Route("~/api/AddShipper")]
         [HttpPost]
+        //[Route("api/[PostShipperInfo]")]
         public IActionResult Create([FromBody] ShipperInfo item)
         {
             if (item == null)
@@ -51,38 +58,41 @@ namespace TestAPI.Controllers
             _context.ShipperInfoItems.Add(item);
             _context.SaveChanges();
 
-            return CreatedAtRoute("GetShipperInfo", new { id = item.ShipmentNo }, item);
+            return CreatedAtRoute("GetShipperInfo", new { id = item.shipmentNumber }, item);
+            
         }
 
-        [HttpPut("{ShipmentNo}")]
+        //[Route("~/api/UpdateShipper")]
+        [HttpPut("{shipmentNumber}")]
         public IActionResult Update(long ShipmentNo, [FromBody] ShipperInfo item)
         {
-            if (item == null || item.ShipmentNo != ShipmentNo)
+            if (item == null || item.shipmentNumber != ShipmentNo)
             {
                 return BadRequest();
             }
 
-            var todo = _context.ShipperInfoItems.FirstOrDefault(t => t.ShipmentNo == ShipmentNo);
+            var todo = _context.ShipperInfoItems.FirstOrDefault(t => t.shipmentNumber == ShipmentNo);
             if (todo == null)
             {
                 return NotFound();
             }
 
-            todo.ItemType = item.ItemType;
-            todo.ItemName = item.ItemName;
-            todo.Vendor = item.Vendor;
-            todo.Count = item.Count;
-            todo.Status = item.Status;
+            todo.itemTyp = item.itemTyp;
+            todo.itemNam = item.itemNam;
+            todo.vendorName = item.vendorName;
+            todo.itemCnt = item.itemCnt;
+            todo.status = item.status;
 
             _context.ShipperInfoItems.Update(todo);
             _context.SaveChanges();
             return new NoContentResult();
         }
 
+        //[Route("~/api/DeleteShipper")]
         [HttpDelete("{ShipmentNo}")]
         public IActionResult Delete(long ShipmentNo)
         {
-            var todo = _context.ShipperInfoItems.FirstOrDefault(t => t.ShipmentNo == ShipmentNo);
+            var todo = _context.ShipperInfoItems.FirstOrDefault(t => t.shipmentNumber == ShipmentNo);
             if (todo == null)
             {
                 return NotFound();
